@@ -10,7 +10,7 @@ The OpenAIAPI class provides an interface to the OpenAI API. It provides methods
 
 
 ## Purpose 
-It was built for personal use, like all in one class.
+This project was developed for personal use, functioning as a sort of all-in-one class. It encapsulates a variety of functions and features that I found useful and needed frequently. 
 
 ## About
 This versatile class presents several options for interaction, including chat, completions, and image end points. To ensure a friendly and respectful environment, all input text undergoes a profanity check and any profane words are censored. 
