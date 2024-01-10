@@ -186,6 +186,13 @@ def generate(cls, prompt: str, *, method: Optional[str]=None, api_key: Optional[
         return ValueError("type must be specified either 'chat or completions or image'")
 
     match get:
-        case "chat":
-```            return asyncio.run(
+            case "chat":
+                return asyncio.run(cls().generate_chat_response(prompt, model=model, api_key=api_key))
+            case "completions":
+                return asyncio.run(cls().generate_completetion_response(prompt, model=model, api_key=api_key))
+            case "image":
+                return asyncio.run((cls().generate_image(prompt, model=model, api_key=api_key)))
+            case "batches":
+                return asyncio.run(cls().generate_batches(prompt, method=method, model=model, api_key=api_key ,token_size=token_size))
 
+```  
