@@ -72,7 +72,6 @@ class OpenAIAPI():
         client = AsyncOpenAI(api_key=api_key)
         completion = await client.chat.completions.create(
             model=model,
-            # max_tokens=4000 - (math.ceil(len(prompt)/4)),
             messages=[
                 {"role": "system", "content": "You are a helpful assistant."},
                 {"role": "user", "content": prompt}
@@ -97,7 +96,6 @@ class OpenAIAPI():
         completions = await client.completions.create(
             model=model,
             prompt=prompt,
-            # max_tokens=4000 - (math.ceil(len(prompt)/4)),
             n=1,
             top_p=1,
             stop=None,
