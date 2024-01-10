@@ -2,11 +2,11 @@
 The OpenAIAPI class provides an interface to the OpenAI API. It provides methods for cleaning text, generating responses, and generating images. The class can be used to generate responses in parallel, and it supports multiple models and methods for generating responses. The class also provides a generate method that can be used to generate responses based on the specified parameters.
 
 ## Table of content
-[Purpose](#purpose)
-[About](#about)
-[Authorship](#authorship)
-[Methods](#methods)
-[Examples of use](#examples-of-use)
+1) [Purpose](#purpose)
+2) [About](#about)
+3) [Authorship](#authorship)
+4) [Methods](#methods)
+5) [Examples of use](#examples-of-use)
 
 
 ## Purpose 
