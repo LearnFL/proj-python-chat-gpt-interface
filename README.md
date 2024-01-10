@@ -1,10 +1,24 @@
 # OpenAIAPI
 The OpenAIAPI class provides an interface to the OpenAI API. It provides methods for cleaning text, generating responses, and generating images. The class can be used to generate responses in parallel, and it supports multiple models and methods for generating responses. The class also provides a generate method that can be used to generate responses based on the specified parameters.
+
 ## Table of content
 [Purpose](#purpose)
+[About](#about)
+[Authorship](#authorship)
+[Methods](#methods)
+[Examples of use](#examples-of-use)
+
 
 ## Purpose 
 It was built for personal use, like all in one class.
+
+## About
+This versatile class presents several options for interaction, including chat, completions, and image end points. To ensure a friendly and respectful environment, all input text undergoes a profanity check and any profane words are censored. 
+In order to optimize efficiency, any input text that exceeds 30 words will undergo stop word removal to decrease its size. The class is designed to locate a `.env` file containing the `'OPENAI_API_KEY'` variable. This file should be located in the directory of the current script. 
+Alternatively, you may pass the API key when initializing the class. 
+
+## Authorship
+This project was created by Dennis Rotnov. Feel free to use, reuse and modify it, but please retain this authorship attribution.
 
 ## Methods
 text_cleaner:
@@ -197,4 +211,34 @@ def generate(cls, prompt: str, *, method: Optional[str]=None, api_key: Optional[
             case "batches":
                 return asyncio.run(cls().generate_batches(prompt, method=method, model=model, api_key=api_key ,token_size=token_size))
 
-```  
+```
+
+## Examples of use
+Very long input that needs to be split in multiple inputs.
+```python
+prompt = """SUMMARIZE: ...A VERY LONG TEXT..."""
+res = OpenAIAPI.generate(
+   prompt, get='batches', method="chat", model="gpt-3.5-turbo-1106", token_size=4000)
+print(res)
+```
+
+Chat end point.
+```python
+res = OpenAIAPI.generate(
+    'Say hello', get='chat', model="gpt-3.5-turbo-1106")
+print(res)
+```
+
+Completions endpoint.
+```python
+res = OpenAIAPI.generate(
+    'Say hello to me', get='completions', model="gpt-3.5-turbo-instruct")
+print(res)
+```
+
+Generate image end point.
+```python
+res = OpenAIAPI.generate(
+    'Cat', get='image', model="dall-e-3")
+print(res)
+```
