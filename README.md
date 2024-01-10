@@ -15,7 +15,7 @@ It was built for personal use, like all in one class.
 ## About
 This versatile class presents several options for interaction, including chat, completions, and image end points. To ensure a friendly and respectful environment, all input text undergoes a profanity check and any profane words are censored. 
 In order to optimize efficiency, any input text that exceeds 30 words will undergo stop word removal to decrease its size. The class is designed to locate a `.env` file containing the `'OPENAI_API_KEY'` variable. This file should be located in the directory of the current script. 
-Alternatively, you may pass the API key when initializing the class. 
+Alternatively, you may pass the API key when initializing the class. This class offers a method that allows to split a very long prompt like an article or a book into multiple responses in parallel using the OpenAI API.
 
 ## Authorship
 This project was created by Dennis Rotnov. Feel free to use, reuse and modify it, but please retain this authorship attribution.
