@@ -174,7 +174,7 @@ class OpenAIAPI():
             Union[str, ValueError]: The generated response or a ValueError if the input parameters are invalid.
         """
         if get is None:
-            return ValueError("type must be specified either 'chat or completions or image'")
+            return ValueError("type must be specified either 'chat or completions or image or batches'")
 
         match get:
             case "chat":
