@@ -33,7 +33,6 @@ class OpenAIAPI():
         tokenized_words = nltk.tokenize.word_tokenize(prompt)
         if len(tokenized_words) > 30:
             prompt = " ".join([word for word in tokenized_words if word not in english_stopwords])
-            # prompt = (" ").join(prompt)
             return profanity.censor(prompt)
         return profanity.censor(prompt)
 
