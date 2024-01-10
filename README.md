@@ -214,7 +214,7 @@ def generate(cls, prompt: str, *, method: Optional[str]=None, api_key: Optional[
 ```
 
 ## Examples of use
-Very long input that needs to be split in multiple inputs.
+Very long input that needs to be split in multiple inputs. You specify how you want to split prompt by providing the length of desired input length expressed in tokens.
 ```python
 prompt = """SUMMARIZE: ...A VERY LONG TEXT..."""
 res = OpenAIAPI.generate(
