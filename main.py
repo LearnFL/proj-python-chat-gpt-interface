@@ -12,7 +12,7 @@ from nltk.corpus import stopwords
 import math
 from more_itertools import batched
 from better_profanity import profanity
-from typing import Iterator, Union, Optional
+from typing import Iterator, Optional
 
 load_dotenv()
 
@@ -69,14 +69,17 @@ class OpenAIAPI():
         """
         prompt = self.text_cleaner(prompt)
         client = AsyncOpenAI(api_key=api_key)
-        completion = await client.chat.completions.create(
-            model=model,
-            messages=[
-                {"role": "system", "content": "You are a helpful assistant."},
-                {"role": "user", "content": prompt}
-            ]
-        )
-        return completion.choices[0].message.content
+        try:
+            completion = await client.chat.completions.create(
+                model=model,
+                messages=[
+                    {"role": "system", "content": "You are a helpful assistant."},
+                    {"role": "user", "content": prompt}
+                ]
+            )
+        except Exception as e:
+            print(f"Error while fetching response. Error: {e}")
+        else: return completion.choices[0].message.content
 
     async def generate_completetion_response(self, prompt: str, *, model: str, api_key: Optional[str]=os.getenv('OPENAI_API_KEY')) -> str:
         """
@@ -92,17 +95,20 @@ class OpenAIAPI():
         """
         prompt = self.text_cleaner(prompt)
         client = AsyncOpenAI(api_key=api_key)
-        completions = await client.completions.create(
-            model=model,
-            prompt=prompt,
-            n=1,
-            top_p=1,
-            stop=None,
-            temperature=0.5,
-            frequency_penalty=0.1,
-            presence_penalty=0.1
-        )
-        return completions.choices[0].text
+        try:
+            completions = await client.completions.create(
+                model=model,
+                prompt=prompt,
+                n=1,
+                top_p=1,
+                stop=None,
+                temperature=0.5,
+                frequency_penalty=0.1,
+                presence_penalty=0.1
+            )
+        except Exception as e:
+            print(f"Error while fetching response. Error: {e}")
+        else: return completions.choices[0].text
 
     async def generate_image(self, prompt: str, *, model: str, api_key: Optional[str]=os.getenv('OPENAI_API_KEY')) -> str:
         """
@@ -117,15 +123,18 @@ class OpenAIAPI():
             str: The generated image URL.
         """
         client = AsyncOpenAI(api_key=api_key)
-        response = await client.images.generate(
-            model=model,
-            prompt=prompt,
-            size="1024x1024",
-            quality="standard",
-            n=1,
-        )
-        image_url = response.data[0].url
-        return image_url
+        try:
+            response = await client.images.generate(
+                model=model,
+                prompt=prompt,
+                size="1024x1024",
+                quality="standard",
+                n=1,
+            )
+            image_url = response.data[0].url
+        except Exception as e:
+            print(f"Error while fetching response. Error: {e}")
+        else: return image_url
 
     async def generate_batches(self, prompt: str, *, method: str, model: str, api_key: Optional[str]=os.getenv('OPENAI_API_KEY'), token_size: int) -> str:
         """
@@ -157,7 +166,7 @@ class OpenAIAPI():
         return "Something went wrong"
 
     @classmethod
-    def generate(cls, prompt: str, *, method: Optional[str]=None, api_key: Optional[str]=None, token_size: Optional[int]=None, model: str, get:str) -> Union[str, ValueError]:
+    def generate(cls, prompt: str, *, method: Optional[str]=None, api_key: Optional[str]=None, token_size: Optional[int]=None, model: Optional[str]=None, get: Optional[str]=None) -> str:
         """
         Generate a response from the OpenAI API based on the specified parameters.
 
@@ -173,7 +182,8 @@ class OpenAIAPI():
             Union[str, ValueError]: The generated response or a ValueError if the input parameters are invalid.
         """
         if get is None:
-            return ValueError("type must be specified either 'chat or completions or image or batches'")
+            raise ValueError("Type must be specified either 'chat or completions or image'")
+        if model is None: raise ValueError("Model must be specified")
 
         match get:
             case "chat":
@@ -184,3 +194,4 @@ class OpenAIAPI():
                 return asyncio.run((cls().generate_image(prompt, model=model, api_key=api_key)))
             case "batches":
                 return asyncio.run(cls().generate_batches(prompt, method=method, model=model, api_key=api_key ,token_size=token_size))
+
