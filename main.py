@@ -14,6 +14,7 @@ from more_itertools import batched
 from better_profanity import profanity
 from typing import Iterator, Optional
 from prompt import prompt
+import re
 
 load_dotenv()
 
@@ -31,7 +32,7 @@ class OpenAIAPI():
             str: The cleaned text.
         """
         english_stopwords = stopwords.words('english')
-        tokenized_words = prompt.split(" ")
+        tokenized_words = re.findall('[a-z.]+', prompt, flags=re.IGNORECASE)
         if len(tokenized_words) > 30:
             prompt = " ".join([word for word in tokenized_words if word not in english_stopwords])
             return profanity.censor(prompt)
@@ -49,10 +50,11 @@ class OpenAIAPI():
             Iterator[str]: An iterator of batches of text.
         """
         prompt = self.text_cleaner(prompt)
-        total_tokens = math.ceil(len(prompt.split(" "))*1.4)
+        prompt_array = re.findall('[a-z.]+', prompt, flags=re.IGNORECASE)
+        total_tokens = math.ceil(len(prompt_array)*1.4)
         batches = math.ceil(total_tokens / token_size)
         if total_tokens > token_size:
-            for batch in batched(prompt.split(" "), math.ceil(len(prompt.split(" "))/batches)):
+            for batch in batched(prompt_array, math.ceil(len(prompt_array)/batches)):
                 yield " ".join(batch)
         yield prompt
 
@@ -137,7 +139,7 @@ class OpenAIAPI():
             print(f"Error while fetching response. Error: {e}")
         else: return image_url
 
-     async def generate_batches(self, prompt: str, *, method: str, model: str, api_key: Optional[str]=os.getenv('OPENAI_API_KEY'), token_size: int) -> str:
+    async def generate_batches(self, prompt: str, *, method: str, model: str, api_key: Optional[str]=os.getenv('OPENAI_API_KEY'), token_size: int) -> str:
         """
         Generate multiple responses in parallel using the OpenAI API.
 
@@ -163,7 +165,13 @@ class OpenAIAPI():
                         batch, model=model, api_key=api_key))
         # await queue.join()
         if not queue.empty():
-            return f'Items in Queue: {queue.qsize()} \\n {[await queue.get() for _ in range(queue.qsize())]}'
+            summary_array = []
+            [summary_array.append(await queue.get()) for _ in range(queue.qsize())]
+            return \
+                await self.generate_chat_response(f'You are an educator, specializing in delivering informtion in a way that is easy to understand and you never miss important details. Provide detailed summary: {" ".join(summary_array)}', model=model, api_key=api_key) \
+                if method == "chat" \
+                    else await self.generate_completetion_response(f'Provide detailed summary: {" ".join(summary_array)}', model=model, api_key=api_key)
+            # return f'Items in Queue: {queue.qsize()} \n\n {[await queue.get() for _ in range(queue.qsize())]}'
         return "Something went wrong"
 
     @classmethod
@@ -195,3 +203,4 @@ class OpenAIAPI():
                 return asyncio.run((cls().generate_image(prompt, model=model, api_key=api_key)))
             case "batches":
                 return asyncio.run(cls().generate_batches(prompt, method=method, model=model, api_key=api_key ,token_size=token_size))
+
