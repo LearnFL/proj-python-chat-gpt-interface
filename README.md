@@ -265,6 +265,6 @@ print(res)
 
 ## Fixes
 ####  1/11/24 Fixed a bug related to counting tokens tokes. Now uses regular expressions and new multiplier for convirsion.
-#### 1/11/24 Updated generate_batches method. Now runs batches. joins result and provides a single summary.
-#### 1/11/24 
+#### 1/11/24 Updated generate_batches method. Now runs batches, joins result and runs again to provide a single summary.
+#### 1/11/24 Added task variable to generate_batches. Variable `task` holds instruction for the Chat Gpt on what you want from it. It will be pre-appended to each batch of text so the model could extract or do what you need done.
  
