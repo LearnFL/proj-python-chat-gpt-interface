@@ -7,6 +7,7 @@ The OpenAIAPI class provides an interface to the OpenAI API. It provides methods
 3) [Authorship](#authorship)
 4) [Methods](#methods)
 5) [Examples of use](#examples-of-use)
+6) [Fixes](#fixes)
 
 
 ## Purpose 
@@ -242,3 +243,7 @@ res = OpenAIAPI.generate(
     'Cat', get='image', model="dall-e-3")
 print(res)
 ```
+
+## Fixes
+####  1/11/24 Fixed bug how tokes are calculated.
+It is a temporary fix that needs to be further imporved.
