@@ -236,7 +236,7 @@ Generates a response from the OpenAI API based on the specified parameters.
 Very long input that needs to be split in multiple inputs. You specify how you want to split prompt by providing the length of desired input length expressed in tokens. <br>
 Variable `task` holds instruction for the Chat Gpt on what you want from it. It will be pre-appended to each batch of text so the model could extract or do what you need done. 
 ```python
-prompt = """A VERY LONG TEXT..."""
+prompt = """A VERY LONG TEXT ON HOW TO USE REGULAR EXPRESSIONS..."""
 res = OpenAIAPI.generate(
    prompt, task="Explain how to use re", get='batches', method="chat", model="gpt-3.5-turbo-1106", token_size=4000)
 print(res)
