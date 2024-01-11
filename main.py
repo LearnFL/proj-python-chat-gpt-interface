@@ -137,7 +137,7 @@ class OpenAIAPI():
             print(f"Error while fetching response. Error: {e}")
         else: return image_url
 
-    async def generate_batches(self, prompt: str, *, method: str, model: str, api_key: Optional[str]=os.getenv('OPENAI_API_KEY'), token_size: int) -> str:
+     async def generate_batches(self, prompt: str, *, method: str, model: str, api_key: Optional[str]=os.getenv('OPENAI_API_KEY'), token_size: int) -> str:
         """
         Generate multiple responses in parallel using the OpenAI API.
 
@@ -161,9 +161,9 @@ class OpenAIAPI():
                 case "completions":
                     await queue.put(await self.generate_completions_response(
                         batch, model=model, api_key=api_key))
-
+        # await queue.join()
         if not queue.empty():
-            return f'Items in Queue: {queue.qsize()} \\n {[await queue.get()]}'
+            return f'Items in Queue: {queue.qsize()} \\n {[await queue.get() for _ in range(queue.qsize())]}'
         return "Something went wrong"
 
     @classmethod
