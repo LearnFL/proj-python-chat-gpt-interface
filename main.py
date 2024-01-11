@@ -163,7 +163,6 @@ class OpenAIAPI():
                 case "completions":
                     await queue.put(await self.generate_completions_response(
                         batch, model=model, api_key=api_key))
-        # await queue.join()
         if not queue.empty():
             summary_array = []
             [summary_array.append(await queue.get()) for _ in range(queue.qsize())]
@@ -171,7 +170,6 @@ class OpenAIAPI():
                 await self.generate_chat_response(f'You are an educator, specializing in delivering informtion in a way that is easy to understand and you never miss important details. Provide detailed summary: {" ".join(summary_array)}', model=model, api_key=api_key) \
                 if method == "chat" \
                     else await self.generate_completetion_response(f'Provide detailed summary: {" ".join(summary_array)}', model=model, api_key=api_key)
-            # return f'Items in Queue: {queue.qsize()} \n\n {[await queue.get() for _ in range(queue.qsize())]}'
         return "Something went wrong"
 
     @classmethod
