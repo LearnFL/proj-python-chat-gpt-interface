@@ -13,6 +13,7 @@ import math
 from more_itertools import batched
 from better_profanity import profanity
 from typing import Iterator, Optional
+from prompt import prompt
 
 load_dotenv()
 
@@ -30,7 +31,7 @@ class OpenAIAPI():
             str: The cleaned text.
         """
         english_stopwords = stopwords.words('english')
-        tokenized_words = nltk.tokenize.word_tokenize(prompt)
+        tokenized_words = prompt.split(" ")
         if len(tokenized_words) > 30:
             prompt = " ".join([word for word in tokenized_words if word not in english_stopwords])
             return profanity.censor(prompt)
@@ -48,11 +49,11 @@ class OpenAIAPI():
             Iterator[str]: An iterator of batches of text.
         """
         prompt = self.text_cleaner(prompt)
-        total_tokens = math.ceil((len(prompt)/4))
+        total_tokens = math.ceil(len(prompt.split(" "))*1.4)
         batches = math.ceil(total_tokens / token_size)
         if total_tokens > token_size:
-            for bacth in batched(prompt, math.ceil(len(prompt)/batches)):
-                yield " ".join(bacth)
+            for batch in batched(prompt.split(" "), math.ceil(len(prompt.split(" "))/batches)):
+                yield " ".join(batch)
         yield prompt
 
     async def generate_chat_response(self, prompt: str, *, model: str, api_key: Optional[str]=os.getenv('OPENAI_API_KEY')) -> str:
@@ -194,4 +195,3 @@ class OpenAIAPI():
                 return asyncio.run((cls().generate_image(prompt, model=model, api_key=api_key)))
             case "batches":
                 return asyncio.run(cls().generate_batches(prompt, method=method, model=model, api_key=api_key ,token_size=token_size))
-
