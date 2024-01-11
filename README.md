@@ -245,5 +245,5 @@ print(res)
 ```
 
 ## Fixes
-####  1/11/24 Fixed bug how tokes are calculated.
-It is a temporary fix that needs to be further imporved.
+####  1/11/24 Fixed bug how tokes are calculated and generate_batches method.
+Counting tokens is a temporary fix that needs to be further imporved. Generate_batches method is updated to combine all responses in a single string. 
