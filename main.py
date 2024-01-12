@@ -13,7 +13,6 @@ import math
 from more_itertools import batched
 from better_profanity import profanity
 from typing import Iterator, Optional
-from prompt import prompt
 import re
 
 load_dotenv()
@@ -139,7 +138,7 @@ class OpenAIAPI():
             print(f"Error while fetching response. Error: {e}")
         else: return image_url
 
-    async def generate_batches(self, prompt: str, *, task: str, method: str, model: str, api_key: Optional[str]=os.getenv('OPENAI_API_KEY'), token_size: int) -> str:
+     async def generate_batches(self, prompt: str, *, task: str, method: str, model: str, api_key: Optional[str]=os.getenv('OPENAI_API_KEY'), token_size: int) -> str:
         """
         Generate multiple responses in parallel using the OpenAI API.
 
@@ -168,9 +167,9 @@ class OpenAIAPI():
             summary_array = []
             [summary_array.append(await queue.get()) for _ in range(queue.qsize())]
             return \
-                await self.generate_chat_response(f'You are an educator, specializing in delivering informtion in a way that is easy to understand and you never miss important details. {task}: {" ".join(summary_array)}', model=model, api_key=api_key) \
+                await self.generate_chat_response(f'You are a professional educator and researcher, specializing in analysing and delivering informtion in a way that is easy to understand and you never miss important details like main idea, facts, cause and effect, problems and solutions. {task}: {" ".join(summary_array)}', model=model, api_key=api_key) \
                 if method == "chat" \
-                    else await self.generate_completetion_response(f'You are an educator, specializing in delivering informtion in a way that is easy to understand and you never miss important details. {task}: {" ".join(summary_array)}', model=model, api_key=api_key)
+                    else await self.generate_completetion_response(f'You are a professional educator and researcher, specializing in analysing delivering informtion in a way that is easy to understand and you never miss important details like main idea, facts, cause and effect, problems and solutions. {task}: {" ".join(summary_array)}', model=model, api_key=api_key)
         return "Something went wrong"
 
     @classmethod
