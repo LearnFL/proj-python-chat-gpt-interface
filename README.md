@@ -7,7 +7,7 @@ The OpenAIAPI class provides an interface to the OpenAI API. It provides methods
 3) [Authorship](#authorship)
 4) [Methods](#methods)
 5) [Examples of use](#examples-of-use)
-6) [Fixes](#fixes-and-improvements)
+6) [Fixes and improvements](#fixes-and-improvements)
 
 
 ## Purpose 
