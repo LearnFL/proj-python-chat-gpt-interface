@@ -7,7 +7,7 @@ The OpenAIAPI class provides an interface to the OpenAI API. It provides methods
 3) [Authorship](#authorship)
 4) [Methods](#methods)
 5) [Examples of use](#examples-of-use)
-6) [Fixes](#fixes)
+6) [Fixes](#fixes-and-improvements)
 
 
 ## Purpose 
@@ -263,8 +263,8 @@ res = OpenAIAPI.generate(
 print(res)
 ```
 
-## Fixes
-####  1/11/24 Fixed a bug related to counting tokens tokes. Now uses regular expressions and new multiplier for convirsion.
-#### 1/11/24 Updated generate_batches method. Now runs batches, joins result and runs again to provide a single summary.
-#### 1/11/24 Added task variable to generate_batches. Variable `task` holds instruction for the Chat Gpt on what you want from it. It will be pre-appended to each batch of text so the model could extract or do what you need done.
- 
+## Fixes and improvements
+####  1/11/2024 Fixed a bug related to counting tokens tokes. Now uses regular expressions and new multiplier for convirsion.
+#### 1/11/2024 Updated generate_batches method. Now runs batches, joins result and runs again to provide a single summary.
+#### 1/11/2024 Added task variable to generate_batches. Variable `task` holds instruction for the Chat Gpt on what you want from it. It will be pre-appended to each batch of text so the model could extract or do what you need done.
+#### 1/12/2024 Improved prompt in generate_batches method. The prompt should help with analysing and summarizing long inputs. 
