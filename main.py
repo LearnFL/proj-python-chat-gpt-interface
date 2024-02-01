@@ -138,7 +138,7 @@ class OpenAIAPI():
             print(f"Error while fetching response. Error: {e}")
         else: return image_url
 
-     async def generate_batches(self, prompt: str, *, task: str, method: str, model: str, api_key: Optional[str]=os.getenv('OPENAI_API_KEY'), token_size: int) -> str:
+    async def generate_batches(self, prompt: str, *, task: str, method: str, model: str, api_key: Optional[str]=os.getenv('OPENAI_API_KEY'), token_size: int) -> str:
         """
         Generate multiple responses in parallel using the OpenAI API.
 
@@ -166,10 +166,13 @@ class OpenAIAPI():
         if not queue.empty():
             summary_array = []
             [summary_array.append(await queue.get()) for _ in range(queue.qsize())]
+
+            setup_prompt = 'You are a professional educator and researcher, specializing in analysing complex structured and unstructured data and delivering informtion in a way that is easy to understand and you never miss important details like main idea, facts, cause and effect, problems and solutions.'
+
             return \
-                await self.generate_chat_response(f'You are a professional educator and researcher, specializing in analysing and delivering informtion in a way that is easy to understand and you never miss important details like main idea, facts, cause and effect, problems and solutions. {task}: {" ".join(summary_array)}', model=model, api_key=api_key) \
+                await self.generate_chat_response(f' {setup_prompt} {task}: {" ".join(summary_array)}', model=model, api_key=api_key) \
                 if method == "chat" \
-                    else await self.generate_completetion_response(f'You are a professional educator and researcher, specializing in analysing delivering informtion in a way that is easy to understand and you never miss important details like main idea, facts, cause and effect, problems and solutions. {task}: {" ".join(summary_array)}', model=model, api_key=api_key)
+                    else await self.generate_completetion_response(f'{setup_prompt} {task}: {" ".join(summary_array)}', model=model, api_key=api_key)
         return "Something went wrong"
 
     @classmethod
@@ -201,4 +204,5 @@ class OpenAIAPI():
             case "image":
                 return asyncio.run((cls().generate_image(prompt, model=model, api_key=api_key)))
             case "batches":
-                return asyncio.run(cls().generate_batches(prompt, task=task, method=method, model=model, api_key=api_key ,token_size=token_size))
+                return asyncio.run(cls().generate_batches(prompt, task=task, method=method, model=model, api_key=api_key ,token_size=token_size))       
+
