@@ -263,14 +263,8 @@ res = OpenAIAPI.generate(prompt, get="chat", task=task, model="gpt-4", api_key=a
 print(res)
 ```
 
-Completions end point.
-```python
-res = OpenAIAPI.generate(
-    'Say hello', get='chat', model="gpt-4")
-print(res)
-```
-
 Completions endpoint.
+
 ```python
 prompt = "Say hello"
 
