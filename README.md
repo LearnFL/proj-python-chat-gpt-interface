@@ -167,7 +167,7 @@ async def generate_image(self, prompt: str, *, model: str, api_key: Optional[str
         else: return image_url
 ```
 generate_batches:
-Generates multiple responses in parallel using the OpenAI API. Capable of handling long prompts.
+Generates multiple calls to api in parallel using the OpenAI API, though at the moment api cannot handle all of them at the same time. Capable of handling long prompts.
 ```python
 async def generate_batches(self, prompt: str, *, task: str, model: str, api_key: Optional[str]=os.getenv('OPENAI_API_KEY'), token_size: int) -> str:
         """
@@ -189,27 +189,18 @@ async def generate_batches(self, prompt: str, *, task: str, model: str, api_key:
 
         try:
             batches = self.batched_prompt(prompt, token_size)
-            queue = asyncio.Queue(maxsize=0)
 
             if not batches: raise Exception("No text to generate or text was lost after cleaning the prompt.")
-            
-            for batch in batches:
-                print("+", end="")
-                await queue.put(await self.generate_chat_response(
-                    task+batch, model=model, api_key=api_key))
+                           
+            tasks = [asyncio.create_task(self.generate_chat_response(
+                    task+batch, model=model, api_key=api_key)) for batch in batches]
 
-            print(f'\nBatches in pipeline: {queue.qsize()}')
+            done, pending = await asyncio.wait(tasks)
+            cleaned_prompt = self.text_cleaner(str([res.result() for res in done]))
 
-            if queue.empty():
-                raise Exception(f"Queue is empty. Please try again later.")            
-            else:
-                summary_array = []
-                [summary_array.append(await queue.get()) for _ in range(queue.qsize())]
+            print('Finalising...')
+            return await self.generate_chat_response(f'{task}: {str(cleaned_prompt)}', model=model, api_key=api_key)
 
-            if queue.empty():
-                print('Finalyzing...')
-                cleaned_prompt = self.text_cleaner(str(summary_array))
-                return await self.generate_chat_response(f'{task}: {str(cleaned_prompt)}', model=model, api_key=api_key)
         except Exception as e:
             return f"Something went wrong: {e}"
 
@@ -286,6 +277,7 @@ print(res)
 #### 1/11/2024 Updated generate_batches method. Now runs batches, joins result and runs again to provide a single summary.
 #### 1/11/2024 Added task variable to generate_batches. Variable `task` holds instruction for the Chat Gpt on what you want from it. It will be pre-appended to each batch of text so the model could extract or do what you need done.
 #### 1/12/2024 Improved prompt in generate_batches method. The prompt should help with analysing and summarizing long inputs. 
-#### 2/2/2024 Fixe bug related to Completions end point.
+#### 2/2/2024 Fixed bug related to Completions end point.
 #### 2/2/2024 Restructured code.
 #### 2/2/2024 Only Chat end point is capable handling long prompts.
+#### 2/5/2024 Updated paralel calls to api for a long prompt.
