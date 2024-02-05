@@ -15,8 +15,8 @@ from better_profanity import profanity
 from typing import Iterator, Optional
 import re
 
-
 load_dotenv()
+
 
 class OpenAIAPI():
     def text_cleaner(self, prompt: str) -> str:
@@ -78,6 +78,7 @@ class OpenAIAPI():
                     {"role": "user", "content": prompt}
                 ]
             )
+
         except Exception as e:
             print(f"Error while fetching response. Error: {e}")
         else: return completion.choices[0].message.content
@@ -166,27 +167,18 @@ class OpenAIAPI():
 
         try:
             batches = self.batched_prompt(prompt, token_size)
-            queue = asyncio.Queue(maxsize=0)
 
             if not batches: raise Exception("No text to generate or text was lost after cleaning the prompt.")
-            
-            for batch in batches:
-                print("+", end="")
-                await queue.put(await self.generate_chat_response(
-                    task+batch, model=model, api_key=api_key))
+                           
+            tasks = [asyncio.create_task(self.generate_chat_response(
+                    task+batch, model=model, api_key=api_key)) for batch in batches]
 
-            print(f'\nBatches in pipeline: {queue.qsize()}')
+            done, pending = await asyncio.wait(tasks)
+            cleaned_prompt = self.text_cleaner(str([res.result() for res in done]))
 
-            if queue.empty():
-                raise Exception(f"Queue is empty. Please try again later.")            
-            else:
-                summary_array = []
-                [summary_array.append(await queue.get()) for _ in range(queue.qsize())]
+            print('Finalising...')
+            return await self.generate_chat_response(f'{task}: {str(cleaned_prompt)}', model=model, api_key=api_key)
 
-            if queue.empty():
-                print('Finalyzing...')
-                cleaned_prompt = self.text_cleaner(str(summary_array))
-                return await self.generate_chat_response(f'{task}: {str(cleaned_prompt)}', model=model, api_key=api_key)
         except Exception as e:
             return f"Something went wrong: {e}"
 
